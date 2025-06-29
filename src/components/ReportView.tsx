@@ -4,7 +4,7 @@ import React, { useMemo } from 'react';
 import { Paper, Typography, Box, List, ListItem, ListItemText, Alert, Button } from '@mui/material';
 import { mockActivities, Activity } from '@/lib/mockData';
 
-interface WastedTimeByCategory {
+ interface WastedTimeByCategory {
   [category: string]: number;
 }
 

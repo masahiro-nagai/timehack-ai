@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Paper, Typography, Box, TextField, Button, List, ListItem, ListItemText, Chip, Divider, CircularProgress } from '@mui/material';
+import { Paper, Typography, Box, TextField, Button, List, ListItem, ListItemText, Chip, Divider, CircularProgress, Alert } from '@mui/material';
 
 interface Task {
   id: number;
@@ -23,6 +23,7 @@ const SchedulerView: React.FC = () => {
   const [newTaskName, setNewTaskName] = useState('');
   const [scheduledTasks, setScheduledTasks] = useState<ScheduledTask[]>([]);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [productivityPattern, setProductivityPattern] = useState<string | null>(null);
 
   const handleAddTask = () => {
@@ -38,6 +39,7 @@ const SchedulerView: React.FC = () => {
 
   const handleOptimizeSchedule = async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await fetch('/api/schedule', {
         method: 'POST',
@@ -46,11 +48,19 @@ const SchedulerView: React.FC = () => {
         },
         body: JSON.stringify(tasks),
       });
+
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status} ${response.statusText}`);
+      }
+
       const data = await response.json();
-      setScheduledTasks(data.schedule);
-      setProductivityPattern(data.personalProductivityPattern);
-    } catch (error) {
-      console.error('Failed to fetch schedule:', error);
+      
+      setScheduledTasks(data.schedule || []);
+      setProductivityPattern(data.personalProductivityPattern || null);
+
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unknown error occurred.');
+      console.error('Failed to fetch schedule:', err);
     } finally {
       setLoading(false);
     }
@@ -79,6 +89,7 @@ const SchedulerView: React.FC = () => {
       <Button onClick={handleOptimizeSchedule} variant="contained" color="primary" fullWidth disabled={loading}>
         {loading ? <CircularProgress size={24} /> : 'Generate Optimized Schedule'}
       </Button>
+      {error && <Alert severity="error" sx={{ mt: 2 }}>{error}</Alert>}
       <Box mt={3}>
         <Typography variant="h6">Today's Optimal Schedule</Typography>
         <List>

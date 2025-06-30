@@ -29,12 +29,15 @@ const TimelineView: React.FC = () => {
       </Typography>
       <List>
         {mockActivities.map((activity) => (
-          <ListItem key={activity.id} sx={{ borderLeft: `4px solid ${getProductivityColor(activity.productivity)}`, mb: 2 }}>
-            <ListItemText
-              primary={activity.aiSummary}
-              secondary={isClient ? `${activity.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${activity.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ' '}
-            />
-            <Chip label={activity.category} size="small" />
+          <ListItem key={activity.id} sx={{ display: 'flex', alignItems: 'stretch', mb: 1, p: 0 }}>
+            <Box sx={{ width: 5, backgroundColor: getProductivityColor(activity.productivity) }} />
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', p: 1.5 }}>
+              <ListItemText
+                primary={activity.aiSummary}
+                secondary={isClient ? `${activity.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} - ${activity.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : ' '}
+              />
+              <Chip label={activity.category} size="small" />
+            </Box>
           </ListItem>
         ))}
       </List>
